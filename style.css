@@ -127,12 +127,13 @@ color: #7597de;
     cursor: pointer;
   }
   
-  header .bagian-dua {
+  header .bagian-dua img  {
     position: absolute;
     top: 15%;
-    right: 2.5%;
+    right: 6.5%;
     flex-basis: 500%;
-    width: 600px;
+    height: 550px;
+    width: 450px;
     box-shadow: 0 15px 20px #7597de;
     border-radius: 6px;
   }
