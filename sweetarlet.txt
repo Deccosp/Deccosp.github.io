@@ -1,0 +1,186 @@
+1.buat folder 
+2.config autoload 
+	-liblaris
+	-helper
+  config config
+	-base url (copy link nama project)/
+	 $config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 	 	 "on") ? 	 "https" : "http");
+	 $config['base_url'] .= "://".$_SERVER['HTTP_HOST'];
+	 $config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", 	   	 $_SERVER['SCRIPT_NAME']);
+	-kosongkan index.php
+  database
+	-nama database
+	-username(root)
+  route -diganti menjadi home
+3.create file .htaccess
+4.tamplating layout
+	-membuat folder tamplate dan copy index sneat (fluid) <?= base_url ('sneat')?>
+	-$judul
+	-ubah dibagian autoload di tambah jadi 'template'
+	-buat file Template di libraries (copy)
+	-di bagian controller ubah menjadi $this->template->load('template', 'namaview', 	 $data)
+	-dibagian view template ubah di content  menjadi <?= $contents; ?>
+5.membuat menu user
+	BUAT CONTRROLER USER
+	-BUAT FUNGSI SIMPAN-
+
+	-buat $data = array(
+		'contoh'   = $this->input->post('contoh'),
+		'password' = md5($this->input->post('password')), 		
+	)
+	->>>>>>> $this->db->insert('namatabel',$data);<<<<<<<<<<
+	-redirect('user');
+	-autentikasi tidak boleh mnginoutkan username yang sama
+	-dibuat di ats $data
+	>>>>>>$this->db->from('namatabel')->where('username', $this->input->			      post('username'));
+	      $cek = $this->db->get()->row();
+	-buat kondisi if ($cek==NULL){perintah insert}else{redirect('user');}
+	-tambahkan notifikasi 
+	 $this->session->set_flashdata('notifikasi' 'yeayy');
+	  LALU DI VIEW DI TAMBAHKAN 
+	<?= $this->session->flashdata('notifikasi',TRUE)?>
+
+	>>>>>>>>MENAMPILKAN DATA<<<<<<<<<
+	$this->db->from('user')->order_by('nama','ASC');
+	$user = $this->db->get()->result_array();
+	$data = array( 'user' => $user);
+
+
+	>>>>>>> EDIT DATA USER <<<<<<<<<<<
+	dibagian view a href="<?= base_url('user/edit/'.$row['id_user]);?>"
+	pastikan sebelum membuat function hapus saat di edt hrs ada id 
+
+	COPY CONTTROLER DARI INDEX KARENA KURANG LEBIH SAMA BCS HANYA MENAMPILKAN DATA
+	ADA BEBERAPA YANG DI GANTI 
+	-ditambah id_user
+	-ubah dibagian where menjadi $this->db->where('id_user', $id_user);
+	-pada bagian $user = $this->db->get()->ROW();  [karena hanya mengambil 1 baris]
+	NOTE!!!!
+	kalau menggunakan row(); disaat pemanggilan bukan
+	$variabel('contoh'); XXXXXXX
+	$variabel->contoh;✅✅✅
+
+	-dibagian option pada edit 
+	 ada fitur selected dan buat pengondisian
+	<?php if($user->level=="Admin"){echo "selected";}?>
+	<?php if($user->level=="Petugas"){echo "selected";}?> NB = NYA 2 [==] YA!!!
+	<?php if($user->level=="Student"){echo "selected";}?>
+	>>>>>>> HAPUS DATA USER <<<<<<<<<<<
+	dibagian view a href="<?= base_url('user/hapus/'.$row['id_user]);?>"
+	pastikan sebelum membuat function hapus saat di hps hrs ada id 
+       -ubah form actiob menjadi <?= base_url('user/update')?>
+	➖BUAT INPUT TYPE HIDDEN UNTUK MENAMPUNG ID_USER➖
+	<input type="hidden" name="id_user" id="nameBasic" value="<?= $user->id_user?>">
+									placeholder="Enter UserName" required>
+	-------BUAT FUNCTION HAPUS--------
+	public funtion hapus ($id_user){
+	$where = array(
+		'id_user' => $id_user
+	);
+	$this->db->delete('namatabel' ,$where);
+	$this->session->set_flashdata('flash', 'Berhasil memperbarui data');
+		redirect('user');
+	}
+
+	➖➖➖➖ CONTTROLER UPDATE COPY PADA BAGIAN SIMPAN ➖➖➖➖➖➖
+	-hapus pada bagian $cek
+	-hapus pengondisian if
+	-buat $this->db->update('namatabel',$data,$where) $where ini berdasarkan yang 	akan di update apa bisa id
+	
+	public function update(){
+		$data = array(
+			'username' => $this->input->post('username'),
+			'email'    => $this->input->post('email'),
+			'nama' 	   => $this->input->post('nama'),
+			'alamat'   => $this->input->post('alamat'),
+			'level'    => $this->input->post('level')
+		);
+		$where = array(
+			'id_user'  => $this->input->post('id_user);
+		);
+
+		
+		$this->db->update('user', $data,$where); ///ditambah $where
+		$this->session->set_flashdata('flash', 'Berhasil memperbarui data');
+		redirect('user');
+	}
+
+	BUAT VIEW USER INDEX
+	buat menu side bar user <?= base_url('user')?>
+	-buat table
+	-buat button submit (modal)
+	-modal tambah user
+	-alamat =  textarea class="form-control"
+	-value option value="Admin">Admin< (A nya harus besar sesuai dengan database)
+	-SETIAP INPUTTAN DIKASI REQUIRED AGAR HARUS DI ISI SEMUA
+	-button type HARUS DI GANTI SUBMIT
+	-buat form action="<?= base_url('namaconttroler/fungsidiconttroler')?>" 	     	 method="POST" form di taruh di Bawah submit
+	-Tampilkan data user di tabel
+		<?php $no=1; foreach( $user as $a ) {  ?>
+		
+		<?php $no++; } ?>
+6.menu active
+	<?php $url = $this->uri->segment(1)?>
+	<?php if($url=='namamenu'){ echo "active";}?>
+6.Membuat Login
+	a.buat conttroler aut copy dr home
+	b.tidak pake load tapi view
+		-$this->load>view('login',$data);
+	c.ubah route menjadi 'auth'
+	d.buat view login
+	e.buat juga halaman register
+	f.dibagian register buat function simpan yang sama dengan simpan user dan ubah 	di bagian level menjadi "Student"
+	KURANG LEBIH SAMA PADA BAGIAN REGISTER DAN SIMPAN
+	g.login	
+		- dibagian conttroler buat function login
+	public function login(){
+		$username = $this->input->post('username');
+		$password = $this->input->post('password');
+		$this->db->from('user')->where('username' , $username);
+		$data = $this->db->get()->row();
+		if ($data==NULL){
+		$this->session->set_flashdata('flash', 'username tidak di temukan');
+		redirect('auth');
+		} else if ($data->password==$password) {
+		//berhasil login
+		$data = array(
+			'username' => $data->username,
+			'email'    => $data->email,
+			'nama' 	   => $data->nama,
+			'alamat'   => $data->alamat,
+			'level'    => $data->role
+		);
+		$this->session->set_userdata($data);
+		redirect('home');
+		}else {
+		$this->session->set_flashdata('flash', 'PAssword salah');
+		redirect('auth');
+		}
+
+	}
+	lalu buat di setiap conttroler
+	public function __construct()
+	{
+		parent::__construct();
+		if ($this->session->userdata('level') == NULL) {
+			redirect('auth');
+		}
+	}
+	
+7.pembagian hak akses
+	buat di bagian conttroler home
+	public function __construct()
+	{
+		parent::__construct();
+		if($this->session->userdata('is_login')==FALSE){
+			redirect('auth');
+		}
+
+	}
+
+di bagian view template di sidebar 
+	<?php if ($this->session->userdata('level')=="Admin"){?>
+	<?php}?>
+ - buat menu menu lainya
+
+
